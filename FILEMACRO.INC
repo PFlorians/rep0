@@ -1,0 +1,77 @@
+;;;;;;;;;;;;;;;;;;;;;;
+;MACROS FOR FILE WORK;
+;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;
+;       FILENAME     ;
+;;;;;;;;;;;;;;;;;;;;;;
+SETFNAME MACRO
+			MOV DX, OFFSET INP;+1B = POCET
+			MOV SI, DX
+	
+		L1:	
+			INC SI	;AK UZ SU TAM DATA TAK TREBA VYNULOVAT VSETKO CO TAM JE INAK NASTANE PROBLEM
+			MOV BL, [SI]
+			CMP BL, 0;DEFAULTNE BY TO MALO BYT VSETKO NULA
+				JE NEW
+			MOV BL, 0
+			MOV [SI], BL
+			JMP L1
+		NEW:
+			MOV AH, 0AH		;NACITANIE RETAZCA A PRIDANIE DOLARA PRE DEBUG, MENO SA DA HNED VYTLACIT
+			INT 21H
+			;start debug tmp 
+			MOV SI, OFFSET POCET
+			XOR DX, DX
+			XOR AX, AX
+			MOV DX, OFFSET POCET
+			MOV AL, BYTE PTR[SI]
+			ADD DX, AX
+			MOV BX, DX
+			MOV BYTE PTR[BX]+2, '$';toto je len na vypis
+			;end debug tmp here
+		ENDM
+		
+		;;;;;;;;;;;;;;;;;;;;;;
+		; OPEN FILE, HANDLE  ;
+		; IN DATA SEGMENT    ;
+		;;;;;;;;;;;;;;;;;;;;;;
+		FOPEN MACRO
+			MOV AX, 3D00H
+			;MOV AL, 02H ;OTVORIT AKO R/W MOD
+			LEA DX, FNAME ;MENO SUBORU
+			INT 21H
+			MOV HANDLE, AX;ULOZIT AX DO HANDLE
+		ENDM
+		
+		;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+		;CLOSE FILE SAVE DESCRIPTORS ;
+		;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+		FCLOSE MACRO
+			MOV BX, HANDLE
+			MOV AH, 3EH
+			INT 21H
+		ENDM
+		FREAD MACRO
+		READ:
+			MOV BX, HANDLE
+			MOV CX, 190	;CITAJ SUBOR 
+			LEA DX, BUFFER
+			MOV AH, 3FH
+			INT 21H
+			
+			CMP AX, 0
+				JZ CLOSE
+			
+			;MOV DL, BUFFER
+			;MOV AH, 02H
+			;INT 21H
+			PRINTUNTILZERO BUFFER
+			CLEARBUFFER BUFFER
+			JMP READ
+		CLOSE:
+			MOV BX, HANDLE
+			MOV AH, 3EH
+			INT 21H
+			PRINTENTER
+		ENDM
