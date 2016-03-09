@@ -1,2 +1,2 @@
 # rep0
-Test project assembler i8086 
+SEPAROVANE MAKRA V1.1 A ZATRIEDENE PODLA CINNOSTI
