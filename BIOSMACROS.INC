@@ -1,12 +1,31 @@
-    ;;;;;;;;;;;;;;;;;;;
+ ;;;;;;;;;;;;;;;;;;;
     ;  BIOS MAKRA     ;
     ;;;;;;;;;;;;;;;;;;;
     
     ;;;;;;;;;;;;;;;;;;;
     ;    CONSTANTS    ;
     ;;;;;;;;;;;;;;;;;;;
-    X EQU 0
-		Y EQU 0
+	X EQU 0
+	Y EQU 0
+		;;;;;;;;;;;;;;;;;
+		; VIDEO MODE SET;
+		;;;;;;;;;;;;;;;;;
+		SETMODE MACRO
+			MOV AX, 0003H
+			INT 10H
+		ENDM
+		;;;;;;;;;;;;;;;;;;
+		; CURSPOSITION   ;
+		;;;;;;;;;;;;;;;;;;
+		;ZISTI POZICIU KURZORA
+		READPOS MACRO
+			MOV AH, 03H
+			MOV BH, 0
+			INT 10H
+			MOV CURSROW, DH
+			MOV CURSCOL, DL
+			XOR CX, CX
+		ENDM
 		;;;;;;;;;;;;;;;;;;;
 		;     CLRSCR      ;
 		;;;;;;;;;;;;;;;;;;;
