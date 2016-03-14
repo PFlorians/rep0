@@ -5,7 +5,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;
 ;       FILENAME     ;
 ;;;;;;;;;;;;;;;;;;;;;;
-SETFNAME MACRO
+	SETFNAME MACRO
+		LOCAL L1, NEW
 			MOV DX, OFFSET INP;+1B = POCET
 			MOV SI, DX
 	
@@ -37,10 +38,16 @@ SETFNAME MACRO
 		; IN DATA SEGMENT    ;
 		;;;;;;;;;;;;;;;;;;;;;;
 		FOPEN MACRO
+		LOCAL ER1, KONCI
 			MOV AX, 3D00H
 			;MOV AL, 02H ;OTVORIT AKO R/W MOD
 			LEA DX, FNAME ;MENO SUBORU
 			INT 21H
+			JC ER1
+			JMP KONCI
+		ER1:
+			PRINT ERR1
+		KONCI:
 			MOV HANDLE, AX;ULOZIT AX DO HANDLE
 		ENDM
 		
@@ -48,30 +55,57 @@ SETFNAME MACRO
 		;CLOSE FILE SAVE DESCRIPTORS ;
 		;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 		FCLOSE MACRO
+		LOCAL ER3, KONCI1
 			MOV BX, HANDLE
 			MOV AH, 3EH
 			INT 21H
+			JC ER3
+			JMP KONCI1
+			PRINTENTER
+		ER3:
+			PRINT ERR3
+		KONCI1:
 		ENDM
 		FREAD MACRO
+		LOCAL READ, ER2, CLOSE
 		READ:
 			MOV BX, HANDLE
 			MOV CX, 190	;CITAJ SUBOR 
 			LEA DX, BUFFER
 			MOV AH, 3FH
 			INT 21H
-			
+			JC ER2
 			CMP AX, 0
 				JZ CLOSE
 			
-			;MOV DL, BUFFER
-			;MOV AH, 02H
-			;INT 21H
 			PRINTUNTILZERO BUFFER
 			CLEARBUFFER BUFFER
 			JMP READ
+		ER2:
+			PRINT ERR2
 		CLOSE:
+		ENDM
+		;;;;;;;;;;;;;;;;;;;;;;;;;;
+		; TO ISTE AKO FREAD      ;
+		; LEN VOLA EXTERNU       ;
+		; PROCEDURU              ;
+		;;;;;;;;;;;;;;;;;;;;;;;;;;
+		SEARCH MACRO
+		LOCAL SEAR, CLOS, VOLANIE, ER2
+		SEAR:
 			MOV BX, HANDLE
-			MOV AH, 3EH
+			MOV CX, 190	;CITAJ SUBOR 
+			LEA DX, BUFFER
+			MOV AH, 3FH
 			INT 21H
-			PRINTENTER
+			JC ER2
+			CMP AX, 0
+				JZ CLOS
+			JMP VOLANIE
+		ER2:
+			PRINT ERR2
+		VOLANIE:
+			CALL P1
+			JMP SEAR
+		CLOS:
 		ENDM
