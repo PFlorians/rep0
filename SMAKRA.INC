@@ -39,6 +39,7 @@
 		MOV CX, 10
 		XOR BX, BX;TU SA SPOCITAVAJU CIFRY
 	L2:
+		INC BX
 		MOV DX, 0
 		DIV CX	   ;ZVYSOK DO DX
 		ADD DL, 30H;KONVERT DO ASCII
@@ -50,7 +51,61 @@
 	PRINT:
 		POP DX
 		INT 21H
-	LOOPNZ PRINT
+		DEC CX
+		CMP CX, 0H
+			JNZ PRINT
+	ENDM
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	; 16BIT CISLO              ;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	CONVERTTONUMWORD MACRO VAL
+	LOCAL L2, PRINT
+		XOR AX, AX
+		MOV AX, VAL
+		MOV CX, 10
+		XOR BX, BX;TU SA SPOCITAVAJU CIFRY
+	L2:
+		INC BX
+		MOV DX, 0
+		DIV CX	   ;ZVYSOK DO DX
+		ADD DL, 30H;KONVERT DO ASCII
+		PUSH DX
+		CMP AX, 0
+		JNZ L2
+		MOV CX, BX
+		MOV AH, 02H
+	PRINT:
+		POP DX
+		INT 21H
+		DEC CX
+		CMP CX, 0H
+			JNZ PRINT
+	ENDM
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	; 8BIT CISLO               ;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	CONVERTTONUMBYTE MACRO VAL
+	LOCAL L2, PRINT
+		XOR AX, AX
+		MOV AL, VAL
+		MOV CX, 10
+		XOR BX, BX;TU SA SPOCITAVAJU CIFRY
+	L2:
+		INC BX
+		MOV DX, 0
+		DIV CX	   ;ZVYSOK DO DX
+		ADD DL, 30H;KONVERT DO ASCII
+		PUSH DX
+		CMP AX, 0
+		JNZ L2
+		MOV CX, BX
+		MOV AH, 02H
+	PRINT:
+		POP DX
+		INT 21H
+		DEC CX
+		CMP CX, 0H
+			JNZ PRINT
 	ENDM
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; SUBSTRING POCITANIE MAKRO;
