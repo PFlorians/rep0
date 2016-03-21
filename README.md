@@ -1,2 +1,2 @@
 # rep0
-Test project assembler i8086 
+POSLEDNA VERZIA, OBSAHUJE AJ ULOHU
